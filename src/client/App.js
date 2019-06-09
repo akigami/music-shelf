@@ -6,11 +6,7 @@ import FaRegPlayCircle from 'react-icons/lib/fa/play-circle-o';
 import MdMusicVideo from 'react-icons/lib/md/music-video';
 import ReactPlayer from 'react-player';
 import connect from '@vkontakte/vkui-connect';
-import { WindowScroller, AutoSizer, List, InfiniteLoader } from 'react-virtualized';
-import 'react-virtualized/styles.css';
-import debounce from './debounce';
 import ReactList from 'react-list';
-import BottomScrollListener from 'react-bottom-scroll-listener';
 
 connect.send("VKWebAppInit", {});
 

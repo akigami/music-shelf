@@ -12,15 +12,10 @@
     "mongoose": "^5.5.12",
     "prop-types": "^15.6.1",
     "react": "0.14 || 15 || 16",
-    "react-bottom-scroll-listener": "^2.1.2",
     "react-dom": "^16.2.0",
     "react-icons": "2.2.7",
     "react-list": "^0.8.11",
-    "react-measure": "^2.0.2",
-    "react-player": "^1.11.0",
-    "react-virtualized": "^9.13.0",
-    "react-virtualized-sticky-tree": "^2.1.24",
-    "react-virtualized-tree": "^3.2.3"
+    "react-player": "^1.11.0"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0-0",
