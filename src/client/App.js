@@ -41,6 +41,21 @@ const seasons = {
   4: 'Осень',
 };
 
+const months = {
+  '01': 'января',
+  '02': 'февраля',
+  '03': 'марта',
+  '04': 'апреля',
+  '05': 'мая',
+  '06': 'июня',
+  '07': 'июля',
+  '08': 'августа',
+  '09': 'сентября',
+  '10': 'октября',
+  '11': 'ноября',
+  '12': 'декабря',
+};
+
 export default class App extends React.Component {
   constructor(props) {
     super(props);
@@ -54,7 +69,6 @@ export default class App extends React.Component {
       loading: false,
     };
     this.handleOpenModal = this.handleOpenModal.bind(this);
-    this.handleChangeSeason = this.handleChangeSeason.bind(this);
     this.rowRenderer = this.rowRenderer.bind(this);
     this.handleLoad = this.handleLoad.bind(this);
     this.handleScroll = this.handleScroll.bind(this);
@@ -106,6 +120,7 @@ export default class App extends React.Component {
       tree,
     });
     document.addEventListener('scroll', this.handleScroll);
+    this.handleScroll();
   }
   handleScroll() {
     const pos = this.list.el.getBoundingClientRect().top + window.pageYOffset;
@@ -116,16 +131,21 @@ export default class App extends React.Component {
         heading: row.value,
       });
     } else if (row.type == 'season') {
+      const [year, season] = row.value.split('-');
       this.setState({
-        heading: row.value,
+        heading: `${year} - ${seasons[season]}`,
       });
     } else if (row.type == 'date') {
+      const [year, month, day] = row.value.split('-');
+      const season = Math.ceil(month / 3) ;
       this.setState({
-        heading: row.value,
+        heading: `${year} - ${seasons[season]} - ${day} ${months[month]}`,
       });
     } else if (row.type == 'release') {
+      const [year, month, day] = row.value.date.split('-');
+      const [, season] = row.value.season.split('-');
       this.setState({
-        heading: row.value.date,
+        heading: `${year} - ${seasons[season]} - ${day} ${months[month]}`,
       });
     }
     if (document.body.scrollTop <= pos) {
@@ -142,27 +162,30 @@ export default class App extends React.Component {
     const row = this.state.tree[index];
     if (row.type == 'year') {
       return (
-        <div key={key} style={{ background: '#336699', color: 'white' }}>
+        <div key={key} style={{ height: 40, background: '#336699', color: 'white' }}>
           {row.value}
         </div>
       );
     } else if (row.type == 'season') {
+      const [year, season] = row.value.split('-');
       return (
-        <div key={key} style={{ background: '#996633', color: 'white' }}>
-          {row.value}
+        <div key={key} style={{ height: 40, background: '#996633', color: 'white' }}>
+          {`${year} - ${seasons[season]}`}
         </div>
       );
     } else if (row.type == 'date') {
+      const [year, month, day] = row.value.split('-');
+      const season = Math.ceil(month / 3) ;
       return (
-        <div key={key} style={{ background: '#669933', color: 'white' }}>
-          {row.value}
+        <div key={key} style={{ height: 40, background: '#669933', color: 'white' }}>
+          {`${year} - ${seasons[season]} - ${day} ${months[month]}`}
         </div>
       );
     } else if (row.type == 'release') {
       const item = row.value;
       const release = `${item.artist} - ${item.title} | ${item.anime}`;
       return (
-        <div key={key} style={{ background: '#993366', color: 'white' }}>
+        <div key={key} style={{ height: 40, background: '#993366', color: 'white' }}>
           {release}
         </div>
       );
@@ -202,14 +225,6 @@ export default class App extends React.Component {
       );
     }
     this.setState({ modal });
-  }
-  async handleChangeSeason(e) {
-    const value = e.target.value;
-    const res = await fetch(`/api/get?season=${value}`).then((res) => res.json());
-    this.setState({
-      data: res,
-      season: value,
-    });
   }
   render() {
     if (!this.state.data) {
