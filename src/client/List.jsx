@@ -1,18 +1,20 @@
-import React from 'react';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import FaCheck from 'react-icons/lib/fa/check';
 import FaTimes from 'react-icons/lib/fa/close';
-import FaRegPlayCircle from 'react-icons/lib/fa/play-circle-o';
-import MdMusicVideo from 'react-icons/lib/md/music-video';
+import MovieIcon from 'react-icons/lib/md/movie';
+import DiskIcon from 'react-icons/lib/md/disc-full';
+import ReactTooltip from 'react-tooltip';
 import ReactPlayer from 'react-player';
-import connect from '@vkontakte/vkui-connect';
 import ReactList from 'react-list';
-
-connect.send("VKWebAppInit", {});
+import range from 'lodash/range';
+import sample from 'lodash/sample';
+import find from 'lodash/find';
+import get from 'lodash/get';
 
 const modalRoot = document.querySelector('#modal');
 
-class Modal extends React.Component {
+class Modal extends Component {
   constructor(props) {
     super(props);
     this.el = document.createElement('div');
@@ -56,7 +58,7 @@ const months = {
   '12': 'декабря',
 };
 
-export default class App extends React.Component {
+class List extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -76,6 +78,30 @@ export default class App extends React.Component {
     this.loading = false;
     this.hasMore = true;
   }
+  async componentDidMount() {
+    const seasons = await fetch('/api/seasons').then((res) => res.json());
+    const res = await fetch('/api/get').then((res) => res.json());
+    let tree = [];
+    const season = seasons.length ? seasons[0] : null;
+    if (season) {
+      this.addToTree(res, tree);
+    }
+    console.log(tree);
+    const demoCoverIndex = sample(range(tree.length));
+    console.log(demoCoverIndex);
+    if (typeof tree[demoCoverIndex].value === 'object') {
+      tree[demoCoverIndex].value.cover = 'https://picsum.photos/50?random=1';
+    }
+    this.setState({
+      data: res,
+      seasons,
+      season: 0,
+      tree,
+    });
+    document.addEventListener('scroll', this.handleScroll);
+    this.handleScroll();
+  }
+
   addToTree(data, tree) {
     const uniqDates = [...new Set(data.map((item) => item.date))];
     const season = data[0].season;
@@ -104,24 +130,7 @@ export default class App extends React.Component {
       });
     });
   }
-  async componentDidMount() {
-    const seasons = await fetch('/api/seasons').then((res) => res.json());
-    const res = await fetch('/api/get').then((res) => res.json());
-    let tree = [];
-    const season = seasons.length ? seasons[0] : null;
-    if (season) {
-      this.addToTree(res, tree);
-    }
-    console.log(tree);
-    this.setState({
-      data: res,
-      seasons,
-      season: 0,
-      tree,
-    });
-    document.addEventListener('scroll', this.handleScroll);
-    this.handleScroll();
-  }
+
   handleScroll() {
     const pos = this.list.el.getBoundingClientRect().top + window.pageYOffset;
     const [startIndex, stopIndex] = this.list.getVisibleRange();
@@ -158,40 +167,7 @@ export default class App extends React.Component {
       this.handleLoad();
     }
   }
-  rowRenderer(index, key) {
-    const row = this.state.tree[index];
-    if (row.type == 'year') {
-      return (
-        <div key={key} style={{ height: 40, background: '#336699', color: 'white' }}>
-          {row.value}
-        </div>
-      );
-    } else if (row.type == 'season') {
-      const [year, season] = row.value.split('-');
-      return (
-        <div key={key} style={{ height: 40, background: '#996633', color: 'white' }}>
-          {`${year} - ${seasons[season]}`}
-        </div>
-      );
-    } else if (row.type == 'date') {
-      const [year, month, day] = row.value.split('-');
-      const season = Math.ceil(month / 3) ;
-      return (
-        <div key={key} style={{ height: 40, background: '#669933', color: 'white' }}>
-          {`${year} - ${seasons[season]} - ${day} ${months[month]}`}
-        </div>
-      );
-    } else if (row.type == 'release') {
-      const item = row.value;
-      const release = `${item.artist} - ${item.title} | ${item.anime}`;
-      return (
-        <div key={key} style={{ height: 40, background: '#993366', color: 'white' }}>
-          {release}
-        </div>
-      );
-    }
-    return false;
-  }
+
   handleLoad() {
     if (this.state.seasons[this.state.season + 1]) {
       this.setState({
@@ -210,15 +186,30 @@ export default class App extends React.Component {
       this.hasMore = false;
     }
   }
+
   handleOpenModal(type, item) {
     let modal;
     if (type == 'mv' || type == 'video') {
       modal = (
         <Modal>
           <div className="modal">
-            <div className={'player-wrapper'}>
-              <ReactPlayer className={'react-player'} url={item} controls playing muted width='100%' height='100%' />
-              <FaTimes style={{ position: 'absolute', top: 0, right: 0 }} onClick={this.handleOpenModal} size={28} color={'white'} className={'clickable'} />
+            <div className="player-wrapper">
+              <ReactPlayer
+                className="react-player"
+                url={item}
+                controls
+                playing
+                muted
+                width='100%'
+                height='100%'
+              />
+              <FaTimes
+                style={{ position: 'absolute', top: 0, right: 0 }}
+                onClick={this.handleOpenModal}
+                size={28}
+                color="white"
+                className="clickable"
+              />
             </div>
           </div>
         </Modal>
@@ -226,25 +217,99 @@ export default class App extends React.Component {
     }
     this.setState({ modal });
   }
+
+  rowRenderer(index, key) {
+    const { tree } = this.state;
+    const row = tree[index];
+    if (row.type == 'year') {
+      return (
+        <div key={key} className="list-item-wrapper list-year">
+          {row.value}
+        </div>
+      );
+    } else if (row.type == 'season') {
+      const [, season] = row.value.split('-');
+      return (
+        <div key={key} className="list-item-wrapper list-season">
+          {seasons[season]}
+        </div>
+      );
+    } else if (row.type == 'date') {
+      const [,month, day] = row.value.split('-');
+      return (
+        <div key={key} className="list-item-wrapper list-date">
+          {`${day} ${months[month]}`}
+        </div>
+      );
+    } else if (row.type == 'release') {
+      const item = row.value;
+      const arr = get(item, 'type', []);
+      const isMedia = Boolean(find(arr, e => (e.video || e.mv)));
+      console.log(item.cover);
+      return (
+        <div key={key} className="list-item-wrapper list-item">
+          <div
+            className="list-item-cover"
+            style={item.cover ? {
+              backgroundImage: `url(${item.cover})`,
+            } : {}}
+          >
+            {!item.cover && (
+              <DiskIcon />
+            )}
+          </div>
+          <div className="list-item-content">
+            <div className="list-item-title">
+              <span>{item.title}</span>
+              {' - '}
+              <span className="item-performer">{item.artist}</span>
+            </div>
+            <div className="list-item-sub">{item.anime}</div>
+          </div>
+          {isMedia && (
+            <div className="list-item-actions">
+              <div data-for="tooltip" data-tip>
+                <div className="list-item-icon">
+                  <MovieIcon />
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+    return false;
+  }
+
   render() {
     if (!this.state.data) {
       return null;
     }
+    let classes = ['list-fixed'];
+    if (!!this.state.heading) {
+      classes.push('open');
+    } else {
+      classes = classes.filter(e => e !== 'open');
+    }
     return (
-      <React.Fragment>
+      <div className="list">
         {this.state.modal}
-        <div style={{ position: 'fixed', top: 0, width: '100%', zIndex: 100, background: '#996633', color: 'white' }}>
+        <div className={classes.join(' ')}>
           {this.state.heading}
         </div>
         <ReactList
           ref={(c) => this.list = c}
           itemRenderer={this.rowRenderer}
-          // threshold={0}
           length={this.state.tree.length}
           type='uniform'
           useTranslate3d
         />
-      </React.Fragment>
-    )
+        <ReactTooltip id="tooltip" place="top" type="dark">
+          Доступны видео
+        </ReactTooltip>
+      </div>
+    );
   }
 }
+
+export default List;
