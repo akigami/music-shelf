@@ -79,7 +79,7 @@ class Glide extends Component {
     const { canScrollPrev, canScrollNext } = this.state;
     const { items, effect, effectColor, reach, ItemComponent, ...props } = this.props;
     const shadeProps = {
-      color: effect && effectColor,
+      color: effect ? effectColor: null,
       reach,
     };
     return (
@@ -97,7 +97,7 @@ class Glide extends Component {
           autoHeightMax="100%"
           {...props}
           ref={this.scroll}
-          onScrollFrame={effect && this.scrollEffectHandler}
+          onScrollFrame={effect ? this.scrollEffectHandler : null}
         >
           <Inner>
             {items.map(item => (
@@ -124,7 +124,7 @@ Glide.propTypes = {
   lockScroll: PropTypes.bool,
   effectColor: PropTypes.string,
   horizontalScroll: PropTypes.bool,
-  ItemComponent: PropTypes.element,
+  ItemComponent: PropTypes.func,
   items: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.oneOfType([
       PropTypes.string,

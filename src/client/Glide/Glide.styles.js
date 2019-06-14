@@ -1,12 +1,17 @@
 import styled from '@emotion/styled';
 import { css } from '@emotion/core';
+import isPropValid from '@emotion/is-prop-valid'
 import { Scrollbars } from 'react-custom-scrollbars';
 
 export const Wrapper = styled('div')`
   position: relative;
 `;
 
-export const Scroll = styled(Scrollbars)`
+const shouldForwardProp = (prop) => {
+  return !['autoWidth', 'horizontalScroll', 'lockScroll'].includes(prop);
+};
+
+export const Scroll = styled(Scrollbars, { shouldForwardProp })`
   width: 100%;
 `;
 
