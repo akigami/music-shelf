@@ -243,6 +243,7 @@ body, html {
 
 .sticky {
   position: sticky;
+  position: -webkit-sticky;
   top: 14px;
   z-index: 1;
 }
