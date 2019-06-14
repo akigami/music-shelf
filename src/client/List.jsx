@@ -4,7 +4,7 @@ import FaCheck from 'react-icons/lib/fa/check';
 import FaTimes from 'react-icons/lib/fa/close';
 import MovieIcon from 'react-icons/lib/md/movie';
 import DiskIcon from 'react-icons/lib/md/disc-full';
-import ReactTooltip from 'react-tooltip';
+import { Tooltip } from 'react-tippy';
 import ReactPlayer from 'react-player';
 import ReactList from 'react-list';
 import range from 'lodash/range';
@@ -71,10 +71,12 @@ class List extends Component {
       loading: false,
     };
     this.handleOpenModal = this.handleOpenModal.bind(this);
+    this.listContainer = React.createRef();
+    this.list = React.createRef();
     this.rowRenderer = this.rowRenderer.bind(this);
     this.handleLoad = this.handleLoad.bind(this);
     this.handleScroll = this.handleScroll.bind(this);
-    this.list = null;
+    this.handleSize = this.handleSize.bind(this);
     this.loading = false;
     this.hasMore = true;
   }
@@ -88,7 +90,6 @@ class List extends Component {
     }
     console.log(tree);
     const demoCoverIndex = sample(range(tree.length));
-    console.log(demoCoverIndex);
     if (typeof tree[demoCoverIndex].value === 'object') {
       tree[demoCoverIndex].value.cover = 'https://picsum.photos/50?random=1';
     }
@@ -99,7 +100,14 @@ class List extends Component {
       tree,
     });
     document.addEventListener('scroll', this.handleScroll);
+    window.addEventListener('resize', this.handleSize);
     this.handleScroll();
+    this.handleSize();
+  }
+
+  handleSize() {
+    const width = this.listContainer.current.offsetWidth;
+    this.setState({ widthContainer: width + 0.5 });
   }
 
   addToTree(data, tree) {
@@ -132,8 +140,8 @@ class List extends Component {
   }
 
   handleScroll() {
-    const pos = this.list.el.getBoundingClientRect().top + window.pageYOffset;
-    const [startIndex, stopIndex] = this.list.getVisibleRange();
+    const pos = this.list.current.el.getBoundingClientRect().top + window.pageYOffset;
+    const [startIndex, stopIndex] = this.list.current.getVisibleRange();
     const row = this.state.tree[startIndex];
     if (row.type == 'year') {
       this.setState({
@@ -243,9 +251,15 @@ class List extends Component {
       );
     } else if (row.type == 'release') {
       const item = row.value;
-      const arr = get(item, 'type', []);
-      const isMedia = Boolean(find(arr, e => (e.video || e.mv)));
-      console.log(item.cover);
+      const types = get(item, 'type', []);
+      const isMedia = Boolean(find(types, e => (e.video || e.mv)));
+      const type = types.map(e => e.type).join(' & ');
+      let classesCover = ['list-item-cover-bg'];
+      if (item.cover) {
+        classesCover.push('off');
+      } else {
+        classesCover = classesCover.filter(e => e !== 'off');
+      }
       return (
         <div key={key} className="list-item-wrapper list-item">
           <div
@@ -254,9 +268,11 @@ class List extends Component {
               backgroundImage: `url(${item.cover})`,
             } : {}}
           >
-            {!item.cover && (
-              <DiskIcon />
-            )}
+            <div className={classesCover}>
+              {!item.cover && (
+                <DiskIcon />
+              )}
+            </div>
           </div>
           <div className="list-item-content">
             <div className="list-item-title">
@@ -264,15 +280,23 @@ class List extends Component {
               {' - '}
               <span className="item-performer">{item.artist}</span>
             </div>
-            <div className="list-item-sub">{item.anime}</div>
+            <div className="list-item-sub">
+              {`${type} | ${item.anime}`}
+            </div>
           </div>
           {isMedia && (
             <div className="list-item-actions">
-              <div data-for="tooltip" data-tip>
+              <Tooltip
+                arrow
+                title="Доступны видео"
+                position="bottom"
+                size="small"
+                animateFill={false}
+              >
                 <div className="list-item-icon">
                   <MovieIcon />
                 </div>
-              </div>
+              </Tooltip>
             </div>
           )}
         </div>
@@ -282,31 +306,34 @@ class List extends Component {
   }
 
   render() {
-    if (!this.state.data) {
+    const { tree, modal, heading, data, widthContainer } = this.state;
+    if (!data) {
       return null;
     }
     let classes = ['list-fixed'];
-    if (!!this.state.heading) {
+    if (!!heading) {
       classes.push('open');
     } else {
       classes = classes.filter(e => e !== 'open');
     }
     return (
-      <div className="list">
-        {this.state.modal}
-        <div className={classes.join(' ')}>
-          {this.state.heading}
+      <div ref={this.listContainer} className="container">
+        {modal}
+        <div
+          className={classes.join(' ')}
+          style={{
+            width: widthContainer || '100%',
+          }}
+        >
+          {heading}
         </div>
         <ReactList
-          ref={(c) => this.list = c}
+          ref={this.list}
           itemRenderer={this.rowRenderer}
-          length={this.state.tree.length}
+          length={tree.length}
           type='uniform'
           useTranslate3d
         />
-        <ReactTooltip id="tooltip" place="top" type="dark">
-          Доступны видео
-        </ReactTooltip>
       </div>
     );
   }
