@@ -89,10 +89,6 @@ class List extends Component {
       this.addToTree(res, tree);
     }
     console.log(tree);
-    const demoCoverIndex = sample(range(tree.length));
-    if (typeof tree[demoCoverIndex].value === 'object') {
-      tree[demoCoverIndex].value.cover = 'https://picsum.photos/50?random=1';
-    }
     this.setState({
       data: res,
       seasons,
@@ -254,8 +250,9 @@ class List extends Component {
       const types = get(item, 'type', []);
       const isMedia = Boolean(find(types, e => (e.video || e.mv)));
       const type = types.map(e => e.type).join(' & ');
+      const cover = item.covers.length ? item.covers.find((i) => i.type == 's').url : null;
       let classesCover = ['list-item-cover-bg'];
-      if (item.cover) {
+      if (cover) {
         classesCover.push('off');
       } else {
         classesCover = classesCover.filter(e => e !== 'off');
@@ -264,12 +261,12 @@ class List extends Component {
         <div key={key} className="list-item-wrapper list-item">
           <div
             className="list-item-cover"
-            style={item.cover ? {
-              backgroundImage: `url(${item.cover})`,
+            style={cover ? {
+              backgroundImage: `url(${cover})`,
             } : {}}
           >
             <div className={classesCover}>
-              {!item.cover && (
+              {!cover && (
                 <DiskIcon />
               )}
             </div>

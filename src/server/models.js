@@ -38,6 +38,12 @@ const releaseSchema = new Schema({
   season: {
     type: String,
   },
+  covers: {
+    type: Array,
+  },
+  likes: {
+    type: Number,
+  },
 });
 
 mongoose.model('Release', releaseSchema);

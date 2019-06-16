@@ -101,7 +101,7 @@ class Glide extends Component {
         >
           <Inner>
             {items.map(item => (
-              <Item className="glide-item" key={item.id}>
+              <Item className="glide-item" key={item._id}>
                 <ItemComponent item={item} />
               </Item>
             ))}

@@ -11,15 +11,16 @@ class CoverItem extends Component {
   }
   renderCover(palette) {
     const { item } = this.props;
+    const cover = item.covers.length ? item.covers.find((i) => i.type == 'p').url : null;
     return (
       <div
         className="cover-item-cover"
-        style={item.cover ? {
-          backgroundImage: `url(${item.cover})`,
+        style={cover ? {
+          backgroundImage: `url(${cover})`,
           ...(palette ? { boxShadow: `0 9px 16px -8px ${palette.vibrant}88`, } : {}),
         } : {}}
       >
-        {!item.cover && (
+        {!cover && (
           <DiskIcon />
         )}
       </div>
@@ -27,8 +28,9 @@ class CoverItem extends Component {
   }
   renderWithPalette() {
     const { item } = this.props;
+    const cover = item.covers.length ? item.covers.find((i) => i.type == 'p').url : null;
     return (
-      <Palette image={item.cover}>
+      <Palette image={cover}>
         {this.renderCover}
       </Palette>
     );
@@ -37,9 +39,10 @@ class CoverItem extends Component {
     const { item } = this.props;
     const types = get(item, 'type', []);
     const type = types.map(e => e.type).join(' & ');
+    const cover = item.covers.length ? item.covers.find((i) => i.type == 'p').url : null;
     return (
       <div className="cover-item">
-        {item.cover ? this.renderWithPalette() : this.renderCover()}
+        {cover ? this.renderWithPalette() : this.renderCover()}
         <div className="cover-item-title">
           {item.title}
         </div>
