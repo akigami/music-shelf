@@ -332,7 +332,7 @@ i {
 
 .carousel-wrapper {
   margin: 0 -20px;
-  height: 238px;
+  height: 245px;
 }
 
 .glide-item:first-child {
@@ -349,7 +349,7 @@ i {
   width: 100%;
   min-height: 260px;
   box-shadow: 0 54px 82px -74px rgba(0,0,0,0.2);
-  border-radius: 2px;
+  border-radius: 4px;
 }
 
 .shelf-overlay {
@@ -376,7 +376,7 @@ i {
   width: 100%;
   height: 100px;
   position: relative;
-  border-radius: 2px 2px 0 0;
+  border-radius: 4px 4px 0 0;
   overflow: hidden;
 }
 

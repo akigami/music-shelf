@@ -210,6 +210,7 @@ class MoreModal extends Component {
         <Consumer>
           {({ isOpenModal, itemModal, onCloseModal }) => (
             <Modal
+              blockScroll={false}
               open={isOpenModal}
               onClose={onCloseModal}
               center

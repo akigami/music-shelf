@@ -8,6 +8,24 @@ import MoreModal from './MoreModal';
 
 connect.send("VKWebAppInit", {});
 
+let scrollbarSize;
+
+function getScrollbarSize() {
+  if (typeof scrollbarSize !== 'undefined') return scrollbarSize;
+
+  var doc = document.documentElement;
+  var dummyScroller = document.createElement('div');
+  dummyScroller.setAttribute('style', 'width:99px;height:99px;' + 'position:absolute;top:-9999px;overflow:scroll;');
+  doc.appendChild(dummyScroller);
+  scrollbarSize = dummyScroller.offsetWidth - dummyScroller.clientWidth;
+  doc.removeChild(dummyScroller);
+  return scrollbarSize;
+}
+
+function hasScrollbar() {
+  return document.documentElement.scrollHeight > window.innerHeight;
+}
+
  class App extends Component {
   constructor(props) {
     super(props);
@@ -26,12 +44,21 @@ connect.send("VKWebAppInit", {});
     });
   }
   onOpenModal(item) {
+    const doc = document.documentElement;
+    const scrollTop = window.pageYOffset;
+    if (hasScrollbar()) {
+      doc.style.marginRight = getScrollbarSize();
+    }
+    doc.style.overflow = 'hidden';
     this.setState({
       openModal: true,
       itemModal: item,
     });
   }
   onCloseModal() {
+    const doc = document.documentElement;
+    doc.style.marginRight = '';
+    doc.style.overflow = '';
     this.setState({
       openModal: false,
     }, () => {
