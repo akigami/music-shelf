@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import get from 'lodash/get';
 import Palette from 'react-palette';
 import DiskIcon from 'react-icons/lib/md/disc-full';
+import { Consumer } from './ModalContext';
 
 class CoverItem extends Component {
   constructor(props) {
@@ -41,18 +42,29 @@ class CoverItem extends Component {
     const type = types.map(e => e.type).join(' & ');
     const cover = item.covers.length ? item.covers.find((i) => i.type == 'p').url : null;
     return (
-      <div className="cover-item">
-        {cover ? this.renderWithPalette() : this.renderCover()}
-        <div className="cover-item-title">
-          {item.title}
-        </div>
-        <div className="cover-item-artist">
-          {item.artist}
-        </div>
-        <div className="cover-item-anime">
-          {`${type} | ${item.anime}`}
-        </div>
-      </div>
+      <Consumer>
+        {({ onOpenModal }) => (
+          <button
+            type="button"
+            className="cover-item"
+            onClick={() => onOpenModal({
+              ...item,
+              typeTitle: type,
+            })}
+          >
+            {cover ? this.renderWithPalette() : this.renderCover()}
+            <div className="cover-item-title">
+              {item.title}
+            </div>
+            <div className="cover-item-artist">
+              {item.artist}
+            </div>
+            <div className="cover-item-anime">
+              {`${type} | ${item.anime}`}
+            </div>
+          </button>
+        )}
+      </Consumer>
     );
   }
 }

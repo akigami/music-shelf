@@ -1,40 +1,12 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
-import FaCheck from 'react-icons/lib/fa/check';
-import FaTimes from 'react-icons/lib/fa/close';
 import MovieIcon from 'react-icons/lib/md/movie';
 import DiskIcon from 'react-icons/lib/md/disc-full';
 import { Tooltip } from 'react-tippy';
-import ReactPlayer from 'react-player';
 import ReactList from 'react-list';
-import range from 'lodash/range';
-import sample from 'lodash/sample';
 import find from 'lodash/find';
 import get from 'lodash/get';
+import { Consumer } from './ModalContext';
 
-const modalRoot = document.querySelector('#modal');
-
-class Modal extends Component {
-  constructor(props) {
-    super(props);
-    this.el = document.createElement('div');
-  }
-
-  componentDidMount() {
-    modalRoot.appendChild(this.el);
-  }
-
-  componentWillUnmount() {
-    modalRoot.removeChild(this.el);
-  }
-
-  render() {
-    return ReactDOM.createPortal(
-      this.props.children,
-      this.el,
-    );
-  }
-}
 
 const seasons = {
   1: 'Зима',
@@ -70,7 +42,6 @@ class List extends Component {
       heading: '',
       loading: false,
     };
-    this.handleOpenModal = this.handleOpenModal.bind(this);
     this.listContainer = React.createRef();
     this.list = React.createRef();
     this.rowRenderer = this.rowRenderer.bind(this);
@@ -191,37 +162,6 @@ class List extends Component {
     }
   }
 
-  handleOpenModal(type, item) {
-    let modal;
-    if (type == 'mv' || type == 'video') {
-      modal = (
-        <Modal>
-          <div className="modal">
-            <div className="player-wrapper">
-              <ReactPlayer
-                className="react-player"
-                url={item}
-                controls
-                playing
-                muted
-                width='100%'
-                height='100%'
-              />
-              <FaTimes
-                style={{ position: 'absolute', top: 0, right: 0 }}
-                onClick={this.handleOpenModal}
-                size={28}
-                color="white"
-                className="clickable"
-              />
-            </div>
-          </div>
-        </Modal>
-      );
-    }
-    this.setState({ modal });
-  }
-
   rowRenderer(index, key) {
     const { tree } = this.state;
     const row = tree[index];
@@ -258,52 +198,63 @@ class List extends Component {
         classesCover = classesCover.filter(e => e !== 'off');
       }
       return (
-        <div key={key} className="list-item-wrapper list-item">
-          <div
-            className="list-item-cover"
-            style={cover ? {
-              backgroundImage: `url(${cover})`,
-            } : {}}
-          >
-            <div className={classesCover}>
-              {!cover && (
-                <DiskIcon />
-              )}
-            </div>
-          </div>
-          <div className="list-item-content">
-            <div className="list-item-title">
-              <span>{item.title}</span>
-              {' - '}
-              <span className="item-performer">{item.artist}</span>
-            </div>
-            <div className="list-item-sub">
-              {`${type} | ${item.anime}`}
-            </div>
-          </div>
-          {isMedia && (
-            <div className="list-item-actions">
-              <Tooltip
-                arrow
-                title="Доступны видео"
-                position="bottom"
-                size="small"
-                animateFill={false}
+        <Consumer key={key}>
+          {({ onOpenModal }) => (
+            <button
+              type="button"
+              className="list-item-wrapper list-item"
+              onClick={() => onOpenModal({
+                ...item,
+                typeTitle: type,
+              })}
+            >
+              <div
+                className="list-item-cover"
+                style={cover ? {
+                  backgroundImage: `url(${cover})`,
+                } : {}}
               >
-                <div className="list-item-icon">
-                  <MovieIcon />
+                <div className={classesCover}>
+                  {!cover && (
+                    <DiskIcon />
+                  )}
                 </div>
-              </Tooltip>
-            </div>
+              </div>
+              <div className="list-item-content">
+                <div className="list-item-title">
+                  <span>{item.title}</span>
+                  {' - '}
+                  <span className="item-performer">{item.artist}</span>
+                </div>
+                <div className="list-item-sub">
+                  {`${type} | ${item.anime}`}
+                </div>
+              </div>
+              {isMedia && (
+                <div className="list-item-actions">
+                  <Tooltip
+                    arrow
+                    title="Доступны видео"
+                    position="bottom"
+                    size="small"
+                    animateFill={false}
+                  >
+                    <div className="list-item-icon">
+                      <MovieIcon />
+                    </div>
+                  </Tooltip>
+                </div>
+              )}
+            </button>
           )}
-        </div>
+        </Consumer>
       );
     }
     return false;
   }
 
   render() {
-    const { tree, modal, heading, data, widthContainer } = this.state;
+    const { tree, heading, data, widthContainer } = this.state;
     if (!data) {
       return null;
     }
@@ -315,7 +266,6 @@ class List extends Component {
     }
     return (
       <div ref={this.listContainer} className="container">
-        {modal}
         <div
           className={classes.join(' ')}
           style={{
