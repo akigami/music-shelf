@@ -19,7 +19,7 @@ i {
 
 #modal {
   position: relative;
-  z-index: 999;
+  z-index: 1001;
 }
 
 .modal {
@@ -40,6 +40,7 @@ i {
 
 .player-wrapper {
   position: relative;
+  width: 100%;
 }
 
 .my-sticky-row {
@@ -352,6 +353,14 @@ i {
   border-radius: 4px;
 }
 
+.video-modal {
+  max-width: 540px;
+  width: 100%;
+  min-height: 260px;
+  background: none;
+  padding: 0;
+}
+
 .shelf-overlay {
   background: rgba(35, 35, 35, 0.7);
 }
@@ -606,4 +615,11 @@ i {
   .shelf-closeIcon {
     color: #000;
   }
+}
+
+.react-player {
+  max-width: 540px;
+  width: 100% !important;
+  min-height: 260px;
+  margin: auto;
 }

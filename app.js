@@ -5,6 +5,7 @@ const got = require('got');
 const mongoose = require('mongoose');
 const get = require('lodash/get');
 const config = require('./config');
+const Vibrant = require('node-vibrant');
 require('./src/server/models');
 mongoose.connect(config.mongodbUri, { useNewUrlParser: true });
 const db = mongoose.connection;
@@ -26,6 +27,21 @@ db.once('open', () => {
     res.json(all);
   });
   app.get('/api/test', async (req, res) => {
+    // const docs = await mongoose.model('Release').find({covers: {$exists: true, $ne: []}, shadowColor: {$exists: false}});
+    // // console.log(docs);
+    // let count = 0;
+    // for (const item of docs) {
+    //   const cover = item.covers.find((item) => item.type == 'x').url;
+    //   const { body } = await got(cover, { encoding: null });
+    //   const palette = await Vibrant.from(body).getPalette();
+    //   const hex = palette.Vibrant.getHex();
+    //   item.shadowColor = hex;
+    //   await item.save();
+    //   console.log(count++, '/', docs.length);
+    // }
+    // Vibrant.from(buffer).getPalette().then(palette => {
+    //   console.log(palette.Vibrant.getHex());
+    // })
     // const all = await mongoose.model('Release').find({ uploaded: true }).limit(0);
     // for (const item of all) {
     //   const [, id] = /wall(.*)/.exec(item.link);

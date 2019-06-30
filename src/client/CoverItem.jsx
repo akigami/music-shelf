@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import get from 'lodash/get';
-import Palette from 'react-palette';
 import DiskIcon from 'react-icons/lib/md/disc-full';
 import { Consumer } from './ModalContext';
 
@@ -8,7 +7,6 @@ class CoverItem extends Component {
   constructor(props) {
     super(props);
     this.renderCover = this.renderCover.bind(this);
-    this.renderWithPalette = this.renderWithPalette.bind(this);
   }
   renderCover(palette) {
     const { item } = this.props;
@@ -18,22 +16,13 @@ class CoverItem extends Component {
         className="cover-item-cover"
         style={cover ? {
           backgroundImage: `url(${cover})`,
-          ...(palette ? { boxShadow: `0 9px 16px -8px ${palette.vibrant}88`, } : {}),
+          ...(cover ? { boxShadow: `0 9px 16px -8px ${item.shadowColor}88`, } : {}),
         } : {}}
       >
         {!cover && (
           <DiskIcon />
         )}
       </div>
-    );
-  }
-  renderWithPalette() {
-    const { item } = this.props;
-    const cover = item.covers.length ? item.covers.find((i) => i.type == 'p').url : null;
-    return (
-      <Palette image={cover}>
-        {this.renderCover}
-      </Palette>
     );
   }
   render() {
@@ -52,7 +41,7 @@ class CoverItem extends Component {
               typeTitle: type,
             })}
           >
-            {cover ? this.renderWithPalette() : this.renderCover()}
+            {this.renderCover()}
             <div className="cover-item-title">
               {item.title}
             </div>

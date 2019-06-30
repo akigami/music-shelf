@@ -44,6 +44,9 @@ const releaseSchema = new Schema({
   likes: {
     type: Number,
   },
+  shadowColor: {
+    type: String,
+  },
 });
 
 mongoose.model('Release', releaseSchema);

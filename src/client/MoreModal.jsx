@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import truncate from 'lodash/truncate';
-import Palette from 'react-palette';
 import ReactDOM from 'react-dom';
 import connect from '@vkontakte/vkui-connect';
 import { Tooltip } from 'react-tippy';
@@ -46,56 +45,34 @@ class MoreModal extends Component {
     this.handleOpenModal = this.handleOpenModal.bind(this);
   }
   handleOpenModal(type, item) {
-    console.log('kek');
     let modal;
     if (type == 'mv' || type == 'video') {
       modal = (
-        <ModalVideo>
-          <div className="modal">
-            <div className="player-wrapper">
-              <ReactPlayer
-                className="react-player"
-                url={item}
-                controls
-                playing
-                muted
-                width='100%'
-                height='100%'
-              />
-              <FaTimes
-                style={{ position: 'absolute', top: 0, right: 0 }}
-                onClick={this.handleOpenModal}
-                size={28}
-                color="white"
-                className="clickable"
-              />
-            </div>
-          </div>
-        </ModalVideo>
+        <div className="player-wrapper">
+          <ReactPlayer
+            className="react-player"
+            url={item}
+            controls
+            playing
+          />
+        </div>
       );
     }
     this.setState({ modal });
   }
-  renderCover(item, palette) {
+  renderCover(item) {
     return (
       <div
         className="cover-item-cover"
         style={item.cover ? {
           backgroundImage: `url(${item.cover})`,
-          ...(palette ? { boxShadow: `0 9px 16px -8px ${palette.vibrant}88`, } : {}),
+          ...(item.cover ? { boxShadow: `0 9px 16px -8px ${item.shadowColor}88`, } : {}),
         } : {}}
       >
         {!item.cover && (
           <DiskIcon />
         )}
       </div>
-    );
-  }
-  renderWithPalette(item) {
-    return (
-      <Palette image={item.cover}>
-        {(palette) => this.renderCover(item, palette)}
-      </Palette>
     );
   }
   renderBody(item) {
@@ -113,7 +90,7 @@ class MoreModal extends Component {
           />
         </div>
         <div className="modal-head">
-          {cover ? this.renderWithPalette(coverProps) : this.renderCover(coverProps)}
+          {this.renderCover(coverProps)}
           <div className="modal-head-info">
             <div className="modal-head-title">
               {truncate(item.title, {
@@ -125,7 +102,7 @@ class MoreModal extends Component {
               {item.artist}
             </div>
             <div className="modal-head-anime">
-               {`${item.typeTitle} | ${item.anime}`}
+              {`${item.typeTitle} | ${item.anime}`}
             </div>
           </div>
         </div>
@@ -203,10 +180,32 @@ class MoreModal extends Component {
     );
   }
   render() {
-    const { modal } = this.props;
+    const { modal } = this.state;
+    console.log(modal);
     return (
       <React.Fragment>
-        {modal}
+        {modal && <Modal
+          blockScroll={false}
+          open={true}
+          onClose={this.handleOpenModal}
+          center
+          animationDuration={300}
+          closeIconSize={32}
+          closeIconSvgPath={(
+            <path
+              fill="currentColor"
+              d="M28.5 9.62L26.38 7.5 18 15.88 9.62 7.5 7.5 9.62 15.88 18 7.5 26.38l2.12 2.12L18 20.12l8.38 8.38 2.12-2.12L20.12 18z"
+            />
+          )}
+          classNames={{
+            modal: 'video-modal',
+            overlay: 'shelf-overlay',
+            closeButton: 'shelf-closeButton',
+            closeIcon: 'shelf-closeIcon',
+          }}
+        >
+          {modal}
+        </Modal>}
         <Consumer>
           {({ isOpenModal, itemModal, onCloseModal }) => (
             <Modal
