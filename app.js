@@ -172,6 +172,17 @@ db.once('open', () => {
     res.json(r);
   });
 
+  app.get('/api/getOne', async (req, res) => {
+    const { _id } = req.query;
+    if (!_id) return res.json({});
+    const item = await mongoose.model('Release').findById(_id);
+    if (item) {
+      res.json(item);
+    } else {
+      res.json({});
+    }
+  });
+
   app.use(express.static('dist'));
 
   app.listen(1234, () => {

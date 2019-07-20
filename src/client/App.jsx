@@ -6,6 +6,7 @@ import CoverItem from './CoverItem';
 import { Provider } from './ModalContext';
 import MoreModal from './MoreModal';
 import AdminModal from './AdminModal';
+import qs from 'querystring';
 
 VKC.init({
   // appId: 7002227,
@@ -13,6 +14,22 @@ VKC.init({
   mode: MODE_PROD,
   asyncStyle: true,
   // corsAddress: 'http://127.0.0.1:1235/',
+});
+
+VKC.define('VKWebAppSetLocation', (params, options) => {
+  return new Promise((resolve, reject) => {
+    if (options.mode === MODE_DEV) {
+      if (typeof params.location === 'string') {
+        if (params.location) {
+          document.location.hash = params.location;
+        }
+        else {
+          history.replaceState('', document.title, document.location.href.split('#')[0]);
+        }
+      }
+      resolve();
+    }
+  });
 });
 
 let scrollbarSize;
@@ -50,6 +67,13 @@ class App extends Component {
   }
   async componentDidMount() {
     const [data, error] = await VKC.send('VKWebAppGetUserInfo');
+    if (document.location.hash) {
+      const { item } = qs.parse(location.hash.split('#')[1]);
+      if (item) {
+        const it = await fetch(`/api/getOne?_id=${item}`).then((res) => res.json());
+        this.onOpenModal({...it, typeTitle: it.type.map(e => e.type).join(' & ')});
+      }
+    }
     const popular = await fetch('/api/popular').then((res) => res.json());
     this.setState({
       popular,
@@ -67,6 +91,7 @@ class App extends Component {
       openModal: true,
       itemModal: item,
     });
+    VKC.send('VKWebAppSetLocation', { location: `item=${item._id}` });
   }
   onCloseModal() {
     const doc = document.documentElement;
@@ -79,6 +104,7 @@ class App extends Component {
         this.setState({ itemModal: null });
       }, 400);
     });
+    VKC.send('VKWebAppSetLocation', { location: '' });
   }
   handleClickAdmin(e, item) {
     this.adminModal.handleShow(item);
