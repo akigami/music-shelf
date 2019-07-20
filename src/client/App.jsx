@@ -68,7 +68,7 @@ class App extends Component {
   async componentDidMount() {
     const [data, error] = await VKC.send('VKWebAppGetUserInfo');
     if (document.location.hash) {
-      const { item } = qs.parse(location.hash.split('#')[1]);
+      const { item } = qs.parse(decodeURIComponent(location.hash).split('#')[1]);
       if (item) {
         const it = await fetch(`/api/getOne?_id=${item}`).then((res) => res.json());
         this.onOpenModal({...it, typeTitle: it.type.map(e => e.type).join(' & ')});

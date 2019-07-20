@@ -8,7 +8,7 @@ class CoverItem extends Component {
     super(props);
     this.renderCover = this.renderCover.bind(this);
   }
-  renderCover(palette) {
+  renderCover() {
     const { item } = this.props;
     const cover = item.covers.length ? item.covers.find((i) => i.type == 'p').url : null;
     return (
