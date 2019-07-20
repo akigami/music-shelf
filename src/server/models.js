@@ -32,6 +32,15 @@ const releaseSchema = new Schema({
   link: {
     type: String,
   },
+  playlistLink: {
+    type: String,
+  },
+  preReleaseLink: {
+    type: String,
+  },
+  additionalInfo: {
+    type: String,
+  },
   date: {
     type: String,
   },
@@ -46,6 +55,19 @@ const releaseSchema = new Schema({
   },
   shadowColor: {
     type: String,
+  },
+  songs: {
+    type: [{
+      url: {
+        type: String,
+      },
+      artist: {
+        type: String,
+      },
+      title: {
+        type: String,
+      },
+    }],
   },
 });
 

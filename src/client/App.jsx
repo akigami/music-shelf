@@ -1,12 +1,19 @@
 import React, { Component } from 'react';
-import connect from '@vkontakte/vkui-connect';
+import VKC, { MODE_DEV, MODE_PROD } from '@denisnp/vkui-connect-helper';
 import List from './List';
 import Glide from './Glide/Glide';
 import CoverItem from './CoverItem';
 import { Provider } from './ModalContext';
 import MoreModal from './MoreModal';
+import AdminModal from './AdminModal';
 
-connect.send("VKWebAppInit", {});
+VKC.init({
+  // appId: 7002227,
+  // accessToken: '',
+  mode: MODE_PROD,
+  asyncStyle: true,
+  // corsAddress: 'http://127.0.0.1:1235/',
+});
 
 let scrollbarSize;
 
@@ -26,21 +33,27 @@ function hasScrollbar() {
   return document.documentElement.scrollHeight > window.innerHeight;
 }
 
- class App extends Component {
+const InfoContext = React.createContext('id');
+
+class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       popular: [],
       itemModal: null,
       openModal: false,
+      id: 0,
     };
     this.onOpenModal = this.onOpenModal.bind(this);
     this.onCloseModal = this.onCloseModal.bind(this);
+    this.handleClickAdmin = this.handleClickAdmin.bind(this);
   }
   async componentDidMount() {
+    const [data, error] = await VKC.send('VKWebAppGetUserInfo');
     const popular = await fetch('/api/popular').then((res) => res.json());
     this.setState({
       popular,
+      id: data.data.id,
     });
   }
   onOpenModal(item) {
@@ -67,8 +80,11 @@ function hasScrollbar() {
       }, 400);
     });
   }
+  handleClickAdmin(e, item) {
+    this.adminModal.handleShow(item);
+  }
   render() {
-    const { itemModal, openModal, popular } = this.state;
+    const { itemModal, openModal, popular, id } = this.state;
     return (
       <Provider
         value={{
@@ -93,7 +109,7 @@ function hasScrollbar() {
           <div className="grid">
             <div className="grid-2">
               <h3 className="container">Список музыки</h3>
-              <List />
+              <List userId={id} handleEdit={this.handleClickAdmin} />
             </div>
             <div className="grid-1">
               <div className="container sticky">
@@ -106,6 +122,11 @@ function hasScrollbar() {
             </div>
           </div>
         </div>
+        {id === 89379041 && <div style={{
+          position: 'fixed',
+          right: 0,
+          bottom: 0,
+        }}><AdminModal ref={(c) => this.adminModal = c}/><button onClick={this.handleClickAdmin}>+</button></div>}
       </Provider>
     )
   }

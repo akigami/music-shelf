@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import truncate from 'lodash/truncate';
 import ReactDOM from 'react-dom';
-import connect from '@vkontakte/vkui-connect';
 import { Tooltip } from 'react-tippy';
 import FaTimes from 'react-icons/lib/fa/close';
 import PlayIcon from 'react-icons/lib/md/play-arrow';
@@ -181,7 +180,6 @@ class MoreModal extends Component {
   }
   render() {
     const { modal } = this.state;
-    console.log(modal);
     return (
       <React.Fragment>
         {modal && <Modal

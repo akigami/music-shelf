@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import MovieIcon from 'react-icons/lib/md/movie';
 import DiskIcon from 'react-icons/lib/md/disc-full';
+import EditIcon from 'react-icons/lib/md/mode-edit';
 import { Tooltip } from 'react-tippy';
 import ReactList from 'react-list';
 import find from 'lodash/find';
@@ -163,6 +164,7 @@ class List extends Component {
   }
 
   rowRenderer(index, key) {
+    const { userId, handleEdit } = this.props;
     const { tree } = this.state;
     const row = tree[index];
     if (row.type == 'year') {
@@ -243,6 +245,17 @@ class List extends Component {
                       <MovieIcon />
                     </div>
                   </Tooltip>
+                </div>
+              )}
+              {userId === 89379041 && (
+                <div className="list-item-actions" onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  handleEdit(e, item);
+                }}>
+                  <div className="list-item-icon">
+                    <EditIcon />
+                  </div>
                 </div>
               )}
             </button>
