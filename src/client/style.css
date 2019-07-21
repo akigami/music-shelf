@@ -608,7 +608,7 @@ i {
 
 @media screen and (max-width: 768px) {
   .shelf-closeButton {
-    top: 6px;
+    top: 16px;
     right: 6px;
   }
   

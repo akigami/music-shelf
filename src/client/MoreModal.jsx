@@ -148,7 +148,7 @@ class MoreModal extends Component {
             {item.songs.map((i, idx) => (
               <div key={idx} className="modal-content-type container">
                 <div>{idx+1}. {i.artist} - {i.title}</div>
-                {i.url && (<audio src={i.url} controls controlsList="nodownload" /> )}
+                {i.url && (<audio style={{ width: '100%' }} src={i.url} controls controlsList="nodownload" /> )}
               </div>
             ))}
           </div>
