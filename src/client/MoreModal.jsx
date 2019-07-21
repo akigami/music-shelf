@@ -142,36 +142,50 @@ class MoreModal extends Component {
             ))}
           </div>
         )}
+        {item.songs.length > 0 && (
+          <div className="modal-content container">
+            <h3>Треки</h3>
+            {item.songs.map((i, idx) => (
+              <div key={idx} className="modal-content-type container">
+                <div>{idx+1}. {i.artist} - {i.title}</div>
+                {i.url && (<audio src={i.url} controls controlsList="nodownload" /> )}
+              </div>
+            ))}
+          </div>
+        )}
         <div className="modal-actions">
+          {item.preReleaseLink && (
+            <Button
+                as="a"
+                block
+                href={item.preReleaseLink}
+                target="_blank"
+                rel="nofollow noopener noreferrer"
+              >
+                Открыть пост с пре-релизом
+            </Button>
+          )}
           {item.uploaded && (
             <React.Fragment>
               <Button
                 as="a"
                 block
-                // onClick={() => {
-                //   const hash = item.link.split('/')[3];
-                //   connect.send("VKWebAppSetLocation", {
-                //     location: hash,
-                //   });
-                // }}
                 href={item.link}
                 target="_blank"
                 rel="nofollow noopener noreferrer"
               >
                 Открыть пост
               </Button>
-              <Tooltip
-                arrow
-                title="Временно недоступно"
-                position="bottom"
-                size="small"
-                animateFill={false}
-                style={{ width: '100%' }}
+              <Button 
+                as="a"
+                block
+                disabled={!item.playlistLink}
+                href={item.playlistLink}
+                target="_blank"
+                rel="nofollow noopener noreferrer"
               >
-                <Button block disabled>
                   Перейти в плейлист
-                </Button>
-              </Tooltip>
+              </Button>
             </React.Fragment>
           )}
         </div>

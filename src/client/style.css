@@ -623,3 +623,72 @@ i {
   min-height: 260px;
   margin: auto;
 }
+
+.admin-modal {
+  padding: 16px;
+}
+
+.admin-modal > .item {
+  padding: 4px 0 4px 0;
+}
+
+.item > input[type="text"] {
+  width: 256px;
+  height: 30px;
+}
+
+.vk-flat-button {
+  padding: 7px 16px 8px;
+  margin: 0;
+  font-size: 12.5px;
+  display: inline-block;
+  zoom: 1;
+  cursor: pointer;
+  white-space: nowrap;
+  outline: none;
+  vertical-align: top;
+  line-height: 15px;
+  text-align: center;
+  text-decoration: none;
+  background: none;
+  background-color: #5181b8;
+  color: #fff;
+  border: 0;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.vk-flat-button:hover {
+  background-color: #5b88bd;
+  text-decoration: none;
+}
+
+.vk-flat-button:active {
+  background-color: #4872a3;
+  padding-top: 8px;
+  padding-bottom: 7px;
+}
+
+.green {
+  background-color: #48a368;
+}
+
+.green:hover {
+  background-color: #73a348;
+}
+
+.green:active {
+  background-color: #48a364;
+}
+
+.red {
+  background-color: #a34848;
+}
+
+.red:hover {
+  background-color: #a35548;
+}
+
+.red:active {
+  background-color: #a34859;
+}
