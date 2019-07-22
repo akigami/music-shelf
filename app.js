@@ -74,7 +74,7 @@ db.once('open', () => {
     }
     if (!req.body.anime) return res.json({});
     const item = {};
-    if (req.body.link) {
+    if (req.body.link && (!req.body._id || req.body.updateCover)) {
       const [, id] = /wall(.*)/.exec(req.body.link);
       const { body } = await got(`https://api.vk.com/method/wall.getById?posts=${id}&v=5.95&access_token=${config.serviceToken}`)
       const parsedBody = JSON.parse(body);

@@ -48,6 +48,7 @@ class AdminModal extends Component {
       preReleaseLink: '',
       additionalInfo: '',
       uploaded: false,
+      updateCover: false,
       date: '',
       vgmdb: '',
       type: [],
@@ -137,6 +138,7 @@ class AdminModal extends Component {
       preReleaseLink: '',
       additionalInfo: '',
       uploaded: false,
+      updateCover: false,
       date: '',
       vgmdb: '',
       type: [],
@@ -239,6 +241,10 @@ class AdminModal extends Component {
         <div className="item">
           <div>Загружено:</div>
           <input data-key="uploaded" type="checkbox" checked={this.state.uploaded} onChange={this.handleChange} />
+        </div>
+        <div className="item">
+          <div>Обновить ковёр:</div>
+          <input data-key="updateCover" type="checkbox" checked={this.state.updateCover} onChange={this.handleChange} />
         </div>
         <div className="item">
           <div>Дата:</div>
