@@ -21,7 +21,7 @@
     "cors-anywhere": "^0.4.1",
     "express": "^4.17.1",
     "got": "^9.6.0",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.19",
     "moment": "^2.24.0",
     "mongoose": "^5.5.12",
     "node-vibrant": "^3.1.3",
